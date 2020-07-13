@@ -17,6 +17,11 @@ croppedDirPath = workingD + "output\\"
 
 #If you do not want to generate these images, 
 #replace with appropiate directory with None
+#recommend using at least once, to generate a
+#cropped portrait so that you can know where to 
+#put the name extents
+
+
 #unnamedPath = workingD + "unnamed\\"
 #namesPath = workingD + "names\\"
 unnamedPath = None
