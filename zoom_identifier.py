@@ -78,8 +78,7 @@ for zoomCallScreen in fileNameList:
 	img = cv2.imread(filename, 0)
 	
 	# Thresholding the image
-	#img_bin = cv2.inRange(img, 26, 28)
-	img_bin = cv2.inRange(img, 0, 15)
+	img_bin = cv2.inRange(img, thresImage[0], thresImage[1])
 	if invertImage:
 		img_bin = 255-img_bin
     
@@ -98,14 +97,14 @@ for zoomCallScreen in fileNameList:
 	
 	# Weighting parameters, this will decide the quantity of an image to be added to make a new image.
 	alpha = 0.5
-	beta = 1.0 - alpha# This function helps to add two image with specific weight parameter to get a third image as summation of two image.
+	beta = 1.0 - alpha # This function helps to add two image with specific weight parameter to get a third image as summation of two image.
 	img_final_bin = cv2.addWeighted(verticle_lines_img, alpha, horizontal_lines_img, beta, 0.0)
 	img_final_bin = cv2.erode(~img_final_bin, kernel, iterations=2)
 	(thresh, img_final_bin) = cv2.threshold(img_final_bin, 128,255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 	
 	# Find contours for image, which will detect all the boxes
-	contours, hierarchy = cv2.findContours(img_final_bin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)# Sort all the contours by top to bottom.
-	(contours, boundingBoxes) = sort_contours(contours, method="top-to-bottom")
+	contours, hierarchy = cv2.findContours(img_final_bin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	(contours, boundingBoxes) = sort_contours(contours, method="top-to-bottom") # Sort all the contours by top to bottom.
 	
 	#Now crop the big image to each persons portrait
 	idx = 0
@@ -116,7 +115,7 @@ for zoomCallScreen in fileNameList:
 		idx += 1
 		new_color_img = color_img[y:y+h, x:x+w]
 		if unnamedPath is not None:
-			cv2.imwrite(unnamedPath+str(idx)+ '.png', new_color_img)# If the box height is greater then 20, widht is >80, then only save it as a box in "cropped/" folder.
+			cv2.imwrite(unnamedPath+str(idx)+ '.png', new_color_img)
 		#Try to figure out the name of this person
 		new_img = img[y:y+h, x:x+w]
 		name_img = new_img[nameExtent[0][1]:nameExtent[1][1],nameExtent[0][0]:nameExtent[1][0]]
@@ -124,7 +123,7 @@ for zoomCallScreen in fileNameList:
 			continue
 		name_bin = cv2.inRange(name_img, nameFontColorRange[0], nameFontColorRange[1])
 		#We do not want any weird blobs which will interfere with tesseract
-		name_contours, name_hierarchy = cv2.findContours(name_bin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)# Sort all the contours by top to bottom.
+		name_contours, name_hierarchy = cv2.findContours(name_bin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 		name_bin = 255 - name_bin
 		if len(name_contours) > 0:
 			for ci,c2 in enumerate(name_contours):
@@ -146,4 +145,4 @@ for zoomCallScreen in fileNameList:
 		already_found_names.append(text)
 		print(idx)
 		print(text)
-		cv2.imwrite(croppedDirPath+text+ '.png', new_color_img)# If the box height is greater then 20, widht is >80, then only save it as a box in "cropped/" folder.
+		cv2.imwrite(croppedDirPath+text+ '.png', new_color_img)
